@@ -128,7 +128,9 @@ suspend fun getMenu(): MenuResponseDto
 suspend fun getItem(@Path("id") id: Int): MenuItemDto
 ```
 
-`NetworkModule` keeps the base URL as `https://vivekshah138.github.io/Brewkery/` with the trailing slash. `MenuContractTest.item_request_keeps_the_brewkery_base_path` starts MockWebServer at `/Brewkery/` and asserts the recorded path is `/Brewkery/api/items/7.json`.
+### 🐛 Bug Caught & Fixed: Edge-to-Edge Status Bar UI Overlap
 
-A related parsing safeguard is in the DTOs. Gson builds objects without calling Kotlin constructors, so a missing `extra_price` or a null `badge` would crash a non-null property later. Every wire field is nullable and `MenuMapper` fills safe defaults before the domain model is shown.
+- **Symptom:** On initial launch, the top header and search bar rendered underneath the Android system status bar, obscuring the app title and battery/clock indicators.
+- **Cause:** `enableEdgeToEdge()` expanded the app window under system decorations, but the root Compose layouts lacked WindowInset padding.
+- **Fix:** Wrapped the primary screen layouts inside a `Scaffold` using `Modifier.padding(innerPadding)` (or `Modifier.windowInsetsPadding(WindowInsets.statusBars)`), ensuring content is dynamically offset below the status bar across all screen cutouts and display sizes.
 # BrewkeryApp
